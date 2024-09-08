@@ -1,14 +1,21 @@
-#include <Wire.h>
-#include "Arduino.h"
+#ifndef AD53xx
+#define AD53xx
 
-#define AD53xx_LIB_VERSION              (F("0.1.0"))
+#include "Arduino.h"
+#include <Wire.h>
+
+
+ // #define AD53xx_LIB_VERSION              (F("0.1.0"))
 
 class AD53xx
 {
   public:
 
     //constructor
-      void AD53xx();
+      explicit AD53xx(uint8_t address, 
+                      uint8_t channel_number,
+                      uint8_t resolution, 
+                      uint16_t Voltage_Reference);
 
 
        
@@ -30,6 +37,9 @@ class AD53xx
     uint8_t MSB_BYTE=0x0;
     uint8_t LSB_BYTE=0x0;
     uint8_t my_buffer=0;
-    uint8_t POINTER_BYTE=0x0
+    uint8_t POINTER_BYTE=0x0;
 
 };
+
+
+#endif

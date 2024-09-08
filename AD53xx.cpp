@@ -5,13 +5,13 @@
 
 //  CONSTRUCTOR
 
-void AD53xx::AD53xx(uint8_t address= 0x0C, 
-                    uint8_t channle_number=2,
-                    uint8_t resolution=8, 
-                    uint16_t Voltage_Reference= 2500);
+     AD53xx::AD53xx(uint8_t address, 
+                    uint8_t channel_number,
+                    uint8_t resolution, 
+                    uint16_t Voltage_Reference)
 {
   //uint8_t address= 0x0C;
-  //uint8_t channle_number=2;   // 1 2 4 channels 
+  //uint8_t channel_number=2;   // 1 2 4 channels 
   //uint8_t resolution=8;   // 8 10 12 bits
   //uint16_t Voltage_Reference= 2500 ; // in mV 
 
