@@ -5,7 +5,7 @@
 
 //  CONSTRUCTOR
 
-     AD53xx::AD53xx(uint8_t address, 
+     AD53xx::AD53xx(uint8_t my_address, 
                     uint8_t channel_number,
                     uint8_t resolution, 
                     uint16_t Voltage_Reference)
@@ -15,7 +15,7 @@
   //uint8_t resolution=8;   // 8 10 12 bits
   //uint16_t Voltage_Reference= 2500 ; // in mV 
 
-  Check_adress( address );
+  //Check_adress( my_address );
 }
 
 
