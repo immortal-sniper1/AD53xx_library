@@ -2,6 +2,8 @@
 #include <AD53xx.h>
 
 
+AD53xx My_DAC(0x0C, 2, 8, 2470, &Wire);
+
 void setup() 
 {
   // put your setup code here, to run once:
@@ -9,6 +11,10 @@ Serial.begin(115200);
 
 pinMode(36, OUTPUT);
 digitalWrite(36, 1);
+
+
+
+
 
 Wire.begin(2,1);
 
@@ -58,7 +64,7 @@ byte error, address;
 void loop() 
 {
 //Single voltage set on DAC CH2
-uint16_t yy= DAC_Voltage_to_Value( 1);    // calculate value needed to get 1V at the output
+uint16_t yy= My_DAC.DAC_Voltage_to_Value( 1);    // calculate value needed to get 1V at the output
   My_DAC.DAC_Write_2ch(0x0C , 1, 0, 2, yy );
 delay(50000);
 
