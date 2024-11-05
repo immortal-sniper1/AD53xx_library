@@ -9,11 +9,6 @@ void setup()
   // put your setup code here, to run once:
 Serial.begin(115200);
 
-pinMode(36, OUTPUT);
-digitalWrite(36, 1);
-
-
-
 
 
 Wire.begin(2,1);
@@ -66,7 +61,8 @@ void loop()
 //Single voltage set on DAC CH2
 uint16_t yy= My_DAC.DAC_Voltage_to_Value( 1);    // calculate value needed to get 1V at the output
   My_DAC.DAC_Write_2ch(0x0C , 1, 0, 2, yy );
-delay(50000);
+  Serial.print("1V DAC set");
+delay(10000);
 
 
 
@@ -77,11 +73,15 @@ uint16_t xx= 0;
 while (xx<255) 
 {
 
-  xx = xx+10 ;  
+  xx = xx+25 ;  
   My_DAC.DAC_Write_2ch(0x0C , 1, 0, 1, xx );
+  Serial.print("DAC set at: ");
+  Serial.println( My_DAC.DAC_Value_to_Voltage(xx) );
+  Serial.println();
+  delay(5000);
 }
 
-delay(50000);
+delay(10000);
   Serial.println(" ");
   Serial.println("-----------------------------------------------------------------------------------------------------------");
 
