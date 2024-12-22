@@ -56,10 +56,13 @@ byte error, address;
 
 }
 
+uint16_t xx;
+uint16_t yy;
+
 void loop() 
 {
 //Single voltage set on DAC CH2
-uint16_t yy= My_DAC.DAC_Voltage_to_Value( 1);    // calculate value needed to get 1V at the output
+  yy= My_DAC.DAC_Voltage_to_Value( 1000);    // calculate value needed to get 1000mV at the output
   My_DAC.DAC_Write_2ch(0x0C , 1, 0, 2, yy );
   Serial.print("1V DAC set");
 delay(10000);
@@ -69,15 +72,18 @@ delay(10000);
 
 
 // voltage RAMPon DAC CH1
-uint16_t xx= 0;
+xx= 0;
 while (xx<255) 
 {
 
-  xx = xx+25 ;  
-  My_DAC.DAC_Write_2ch(0x0C , 1, 0, 1, xx );
+ 
+  Serial.print("xx at: ");
+  Serial.println( xx );
+  My_DAC.DAC_Write_2ch(0x0C , 1, 0, 2, xx );
   Serial.print("DAC set at: ");
   Serial.println( My_DAC.DAC_Value_to_Voltage(xx) );
   Serial.println();
+  xx = xx+25 ; 
   delay(5000);
 }
 
