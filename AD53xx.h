@@ -1,5 +1,5 @@
-#ifndef AD53xx
-#define AD53xx
+#ifndef AD53xx_LIB
+#define AD53xx_LIB
 
 #include "Arduino.h"
 #include <Wire.h>
@@ -15,7 +15,8 @@ class AD53xx
               AD53xx (uint8_t my_address, 
                       uint8_t channel_number,
                       uint8_t resolution, 
-                      uint16_t Voltage_Reference);
+                      uint16_t Voltage_Reference,
+                      TwoWire *wire = &Wire);
 
 
        
@@ -38,6 +39,12 @@ class AD53xx
     uint8_t LSB_BYTE=0x0;
     uint8_t my_buffer=0;
     uint8_t POINTER_BYTE=0x0;
+
+    uint8_t my_address;
+    uint8_t channel_number;   // 1 2 4 channels 
+    uint8_t resolution;   // 8 10 12 bits
+    uint16_t Voltage_Reference; // in mV 
+    TwoWire * _wire;
 
 };
 

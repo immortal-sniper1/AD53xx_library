@@ -1,5 +1,6 @@
 #include <AD53xx.h>
-
+#include "Arduino.h"
+#include <Wire.h>
 
 
 
@@ -8,16 +9,20 @@
      AD53xx::AD53xx(uint8_t my_address, 
                     uint8_t channel_number,
                     uint8_t resolution, 
-                    uint16_t Voltage_Reference)
+                    uint16_t Voltage_Reference,
+                    TwoWire *wire) :
+
+                    resolution(resolution), my_address(my_address),
+                    channel_number(channel_number), Voltage_Reference(Voltage_Reference)
 {
   //uint8_t address= 0x0C;
   //uint8_t channel_number=2;   // 1 2 4 channels 
   //uint8_t resolution=8;   // 8 10 12 bits
   //uint16_t Voltage_Reference= 2500 ; // in mV 
-
-  //Check_adress( my_address );
+  _wire        = wire;
+  Check_adress( my_address );
 }
-
+// (*_wire). is same as _wire->
 
 
 
@@ -67,6 +72,9 @@ PD1 PD0 CLR LDAC D11 D10 D9 D8..... D0
 //uint8_t MSB_BYTE=0x80;   //bit 7 is no not care but set to 1 for ease of reading bytes
 //uint8_t LSB_BYTE=0;
 //uint8_t my_buffer=0;
+POINTER_BYTE  =0xC0;
+MSB_BYTE=0x0;
+LSB_BYTE=0x0;
 
 
 
@@ -82,17 +90,17 @@ LSB_BYTE = DAC_1_value << 4 ; // copy the rest of the bits after you remove the 
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 
-Wire.beginTransmission(my_address);  // Transmit to device number 44 (0x2C)
-Wire.write(MSB_BYTE);                 // Sends value MSB_BYTE
-Wire.write(LSB_BYTE);                 // Sends value LSB_BYTE   only for 2 & 4 channels
-Wire.endTransmission();      // Stop transmitting
+_wire->beginTransmission(my_address);  // Transmit to device number 44 (0x2C)
+_wire->write(MSB_BYTE);                 // Sends value MSB_BYTE
+_wire->write(LSB_BYTE);                 // Sends value LSB_BYTE   only for 2 & 4 channels
+_wire->endTransmission();      // Stop transmitting
 
-
+/*
 Serial.print("MSB_BYTE: ");
 Serial.println(MSB_BYTE, BIN);
 Serial.print("LSB_BYTE: ");
 Serial.println(LSB_BYTE, BIN);
-
+*/
 }
 
 
@@ -112,11 +120,12 @@ According to the datasheet the write process is
 PD1 PD0 CLR LDAC D11 D10 D9 D8..... D0
 */
 
-Serial.print("DAC_number: ");
-Serial.println(DAC_number);
+
+//Serial.print("DAC_number: ");
+//Serial.println(DAC_number);
 
 
-if ( (DAC_number != 1) | (DAC_number != 2) )
+if ( (DAC_number != 1) && (DAC_number != 2) )
 {
   Serial.print("WRONG DAC NUMBER");
 }
@@ -126,12 +135,15 @@ if ( (DAC_number != 1) | (DAC_number != 2) )
 //uint8_t LSB_BYTE=0;
 //uint8_t my_buffer=0;
 
-POINTER_BYTE |= 1<< 7;    //no not care bits but nice to see stuff at debug
-POINTER_BYTE |= 1<< 6;
+POINTER_BYTE  =0xC0;
+MSB_BYTE=0x0;
+LSB_BYTE=0x0;
+//POINTER_BYTE |= 1<< 7;    //no not care bits but nice to see stuff at debug
+//POINTER_BYTE |= 1<< 6;
 POINTER_BYTE |= 1<< ( DAC_number -1);  // set bitmask for used DAC
 
-Serial.print("DAC_number: ");
-Serial.println(DAC_number);
+//Serial.print("DAC_number: ");
+//Serial.println(DAC_number);
 // bit 7 6 are for power down mode and defaul 00 is sormal operation mode
 
 
@@ -163,11 +175,13 @@ LSB_BYTE = DAC_1_value << 4 ; // copy the rest of the bits after you remove the 
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 
-Wire.beginTransmission(my_address);  // Transmit to device number 44 (0x2C)
-Wire.write(POINTER_BYTE);             // Sends value POINTER_BYTE
-Wire.write(MSB_BYTE);                 // Sends value MSB_BYTE
-Wire.write(LSB_BYTE);                 // Sends value LSB_BYTE   only for 2 & 4 channels
-Wire.endTransmission();      // Stop transmitting
+_wire->beginTransmission(my_address);  // Transmit to device number 44 (0x2C)
+_wire->write(POINTER_BYTE);             // Sends value POINTER_BYTE
+_wire->write(MSB_BYTE);                 // Sends value MSB_BYTE
+_wire->write(LSB_BYTE);                 // Sends value LSB_BYTE   only for 2 & 4 channels
+_wire->endTransmission();      // Stop transmitting
+
+
 
 Serial.print("POINTER_BYTE: ");
 Serial.println(POINTER_BYTE, BIN);
@@ -199,7 +213,7 @@ According to the datasheet the write process is
 PD1 PD0 CLR LDAC D11 D10 D9 D8..... D0
 */
 
-if ( (DAC_number < 1) | (DAC_number > 4) )
+if ( (DAC_number < 1) && (DAC_number > 4) )
 {
   Serial.print("WRONG DAC NUMBER");
 }
@@ -209,6 +223,9 @@ if ( (DAC_number < 1) | (DAC_number > 4) )
 //uint8_t MSB_BYTE=0;
 //uint8_t LSB_BYTE=0;
 //uint8_t my_buffer=0;
+POINTER_BYTE  =0xC0;
+MSB_BYTE=0x0;
+LSB_BYTE=0x0;
 
 POINTER_BYTE |= 1<< 7;    //no not care bits but nice to see stuff at debug
 POINTER_BYTE |= 1<< 6;
@@ -270,18 +287,20 @@ LSB_BYTE = DAC_1_value << 4 ; // copy the rest of the bits after you remove the 
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 
-Wire.beginTransmission(my_address);  // Transmit to device number 44 (0x2C)
-Wire.write(POINTER_BYTE);             // Sends value POINTER_BYTE
-Wire.write(MSB_BYTE);                 // Sends value MSB_BYTE
-Wire.write(LSB_BYTE);                 // Sends value LSB_BYTE   only for 2 & 4 channels
-Wire.endTransmission();      // Stop transmitting
+_wire->beginTransmission(my_address);  // Transmit to device number 44 (0x2C)
+_wire->write(POINTER_BYTE);             // Sends value POINTER_BYTE
+_wire->write(MSB_BYTE);                 // Sends value MSB_BYTE
+_wire->write(LSB_BYTE);                 // Sends value LSB_BYTE   only for 2 & 4 channels
+_wire->endTransmission();      // Stop transmitting
 
+/*
 Serial.print("POINTER_BYTE: ");
 Serial.println(POINTER_BYTE, BIN);
 Serial.print("MSB_BYTE: ");
 Serial.println(MSB_BYTE, BIN);
 Serial.print("LSB_BYTE: ");
 Serial.println(LSB_BYTE, BIN);
+*/
 
 }
 
@@ -304,7 +323,7 @@ According to the datasheet the write process is
 PD1 PD0 CLR LDAC D11 D10 D9 D8..... D0
 */
 
-if ( (DAC_number != 1) | (DAC_number != 2) )
+if ( (DAC_number != 1) || (DAC_number != 2) )
 {
   Serial.print("WRONG DAC NUMBER");
 }
@@ -324,18 +343,18 @@ POINTER_BYTE |= ( 1<<( DAC_number -1) ) ;  // set bitmask for used DAC
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------
 
-Wire.beginTransmission(my_address);  // Transmit to device number 44 (0x2C)
-Wire.write(POINTER_BYTE);             // Sends value POINTER_BYTE
-Wire.write(  (my_address << 1)| 0x01); 
-MSB_BYTE = Wire.read();    // Receive a byte as character
-LSB_BYTE = Wire.read();    // Receive a byte as character
+_wire->beginTransmission(my_address);  // Transmit to device number 44 (0x2C)
+_wire->write(POINTER_BYTE);             // Sends value POINTER_BYTE
+_wire->write(  (my_address << 1)| 0x01); 
+MSB_BYTE = _wire->read();    // Receive a byte as character
+LSB_BYTE = _wire->read();    // Receive a byte as character
 
 my_buffer = MSB_BYTE <<8 ;
 my_buffer |= LSB_BYTE ;
 my_buffer |= my_buffer >> (16- resolution );
 
 
-Wire.endTransmission();      // Stop transmitting
+_wire->endTransmission();      // Stop transmitting
 
 /*
 Serial.print("POINTER_BYTE: ");
